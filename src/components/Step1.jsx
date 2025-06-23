@@ -7,6 +7,7 @@ export default function Step1({ onNext, defaultValues }) {
     handleSubmit,
     formState: { errors },
   } = useForm({ defaultValues });
+  console.log(errors.lastName)
 
   return (
     <form onSubmit={handleSubmit(onNext)} className="space-y-6">
@@ -25,7 +26,15 @@ export default function Step1({ onNext, defaultValues }) {
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
         <input
-          {...register("lastName", { required: "Last name required" })}
+
+        ///Built-in Rules: required and max length
+          {...register("lastName", {
+             required: "Last name required", 
+             maxLength:{
+              value:20,
+              message:"Last name must be 20 characters or less" 
+            }
+          })}
           placeholder="Last Name"
           className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
