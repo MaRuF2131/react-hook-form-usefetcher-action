@@ -6,7 +6,7 @@ export default function Step1({ onNext, defaultValues }) {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ defaultValues });
+  } = useForm({ defaultValues, shouldUnregister: true,});
   console.log(errors.lastName)
 
   return (
