@@ -23,7 +23,30 @@ export const StringValidationCheck = {
   },
 };
 
-const NumberValidationCheck={
+export const DangerousContentCheck = {
+  validate: async (v) => {
+    return await new Promise((resolve) =>
+      setTimeout(() => {
+        const dangerousPatterns = [
+          /[`'"<>]/,          // backtick
+          /<script>/i,    // script tags
+          /<\/?\w+>/,     // any HTML tag
+          /on\w+=/,       // inline JS events like onclick=
+        ];
+
+        for (let pattern of dangerousPatterns) {
+          if (pattern.test(v)) {
+            return resolve("Invalid or dangerous characters detected");
+          }
+        }
+
+        resolve(true); // passed all checks
+      }, 300)
+    );
+  },
+};
+
+export const NumberValidationCheck={
   validate:async(v)=>{
     return await new Promise(
       (resolve)=>{
@@ -54,7 +77,7 @@ const NumberValidationCheck={
 }
 
 // return multiple error together 
-const PasswordValidationCheck={
+export const PasswordValidationCheck={
    validate:{
       islength:async(v)=>{
         return await Promise((resolve)=>setTimeout(()=>{
@@ -94,7 +117,7 @@ const PasswordValidationCheck={
       },
       isdangerous:async(v)=>{
         return await new Promise((resolve)=>setTimeout(()=>{
-            if(StringValidationCheck.validate(v) !== true){
+            if(DangerousContentCheck.validate(v) !== true){
               resolve("Dangerous content detected");
             }else{
               resolve(true);
@@ -103,3 +126,17 @@ const PasswordValidationCheck={
       }
    }
 }
+
+export const EmailValidationCheck = {
+  validate: async (v) => {
+    return await new Promise((resolve) =>
+      setTimeout(() => {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(v)|| DangerousContentCheck.validate(v) !== true) {
+          return resolve("Invalid email format");
+        }
+        resolve(true);
+      }, 300)
+    );
+  },
+};
