@@ -1,7 +1,24 @@
 import { useForm, Controller } from "react-hook-form";
 import { useEffect } from "react";
+import { 
+  StringValidationCheck,
+  DangerousContentCheck,
+  EmailValidationCheck,
+  PasswordValidationCheck,
+  NumberValidationCheck,
+  UrlValidationCheck,
+  PhoneValidationCheck,
+  DateValidationCheck,
+  TimeValidationCheck,
+  ColorValidationCheck,
+} from "./custom-validation/CustomValidation";
+import {
+  userNameValidation,
+  numberValidation
+} from "./built-in-validation/built-in-validation";
 
 export default function SmartForm() {
+
   const {
     register,
     handleSubmit,
@@ -25,13 +42,21 @@ export default function SmartForm() {
       dirtyFields,
     }
   } = useForm({
-    mode: "onChange",
-    shouldUnregister: true, // 💡 Remove unmounted inputs from state
+    mode: "onTouched",
+    shouldUnregister: true,
+    criteriaMode: "all",
     defaultValues: {
       username: "maruf",
       email: "",
+      password: "",
       age: "",
-      dob: null
+      website: "",
+      phone: "",
+      birthDate: null,
+      meetingTime: "",
+      favoriteColor: "#000000",
+      bio: "",
+      terms: false
     }
   });
 
@@ -48,28 +73,33 @@ export default function SmartForm() {
     }
   }, [watchUsername]);
 
-  const onSubmit = (data) => {
-    console.log("✅ Submitted:", data);
+  const onSubmit = async (data) => {
+    console.log("Form Data:", data);
+/*     const isvalid= await trigger();
+    if (isvalid) {
+      console.log("✅ Submitted:", data);
+    }else{
+      console.log("❌ Submission failed:", errors);
+    } */
   };
+
+  
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
       className="max-w-md mx-auto space-y-4 p-6 border rounded shadow"
     >
-      <h2 className="text-xl font-bold">🌟 Smart Form</h2>
+      <h2 className="text-xl font-bold">🌟 Comprehensive Smart Form</h2>
 
+      {/* Username */}
       <div>
-        <label>Username</label>
+        <label className="block mb-1">Username</label>
         <input
           {...register("username", {
-            required: "Username is required",
-            minLength: { value: 3, message: "Too short" },
-            maxLength: { value: 12, message: "Too long" },
-            pattern: {
-              value: /^[a-z0-9_]+$/,
-              message: "Only lowercase letters, numbers, and underscores"
-            }
+            ...userNameValidation,
+            ...StringValidationCheck,
+            ...DangerousContentCheck
           })}
           className="w-full p-2 border rounded"
           placeholder="Enter username"
@@ -79,15 +109,13 @@ export default function SmartForm() {
         )}
       </div>
 
+      {/* Email */}
       <div>
-        <label>Email</label>
+        <label className="block mb-1">Email</label>
         <input
           {...register("email", {
             required: "Email is required",
-            pattern: {
-              value: /^\S+@\S+\.\S+$/,
-              message: "Invalid email"
-            }
+            ...EmailValidationCheck
           })}
           className="w-full p-2 border rounded"
           placeholder="Enter email"
@@ -97,15 +125,35 @@ export default function SmartForm() {
         )}
       </div>
 
+      {/* Password */}
       <div>
-        <label>Age</label>
+        <label className="block mb-1">Password</label>
+        <input
+          type="password"
+          {...register("password", {
+            required: "Password is required",
+               ...PasswordValidationCheck
+          })}
+          className="w-full p-2 border rounded"
+          placeholder="Enter password"
+        />
+        {errors.password && (
+          <div className="text-red-600 text-sm">
+            {Object.values(errors.password.types).map((error, index) => (
+              <p key={index}>{error}</p>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Age */}
+      <div>
+        <label className="block mb-1">Age</label>
         <input
           type="number"
           {...register("age", {
-            required: "Age is required",
-            min: { value: 18, message: "Minimum age is 18" },
-            max: { value: 60, message: "Maximum age is 60" },
-            setValueAs: (v) => parseInt(v, 10)
+            ...numberValidation,
+            ...NumberValidationCheck
           })}
           className="w-full p-2 border rounded"
           placeholder="Enter age"
@@ -115,12 +163,49 @@ export default function SmartForm() {
         )}
       </div>
 
+      {/* Website URL */}
       <div>
-        <label>Date of Birth</label>
+        <label className="block mb-1">Website</label>
+        <input
+          type="url"
+          {...register("website", {
+            required: "Website URL is required",
+            ...UrlValidationCheck
+          })}
+          className="w-full p-2 border rounded"
+          placeholder="https://example.com"
+        />
+        {errors.website && (
+          <p className="text-red-600 text-sm">{errors.website.message}</p>
+        )}
+      </div>
+
+      {/* Phone Number */}
+      <div>
+        <label className="block mb-1">Phone Number</label>
+        <input
+          {...register("phone", {
+            required: "Phone number is required",
+            ...PhoneValidationCheck
+          })}
+          className="w-full p-2 border rounded"
+          placeholder="+1234567890"
+        />
+        {errors.phone && (
+          <p className="text-red-600 text-sm">{errors.phone.message}</p>
+        )}
+      </div>
+
+      {/* Birth Date */}
+      <div>
+        <label className="block mb-1">Birth Date</label>
         <Controller
-          name="dob"
+          name="birthDate"
           control={control}
-          rules={{ required: "DOB is required" }}
+          rules={{ 
+            required: "Birth date is required",
+            ...DateValidationCheck
+          }}
           render={({ field }) => (
             <input
               type="date"
@@ -129,55 +214,128 @@ export default function SmartForm() {
             />
           )}
         />
-        {errors.dob && (
-          <p className="text-red-600 text-sm">{errors.dob.message}</p>
+        {errors.birthDate && (
+          <p className="text-red-600 text-sm">{errors.birthDate.message}</p>
         )}
       </div>
 
-      <div className="flex gap-3">
+      {/* Meeting Time */}
+      <div>
+        <label className="block mb-1">Meeting Time (HH:MM)</label>
+        <input
+          {...register("meetingTime", {
+            required: "Meeting time is required",
+            ...TimeValidationCheck
+          })}
+          className="w-full p-2 border rounded"
+          placeholder="14:30"
+        />
+        {errors.meetingTime && (
+          <p className="text-red-600 text-sm">{errors.meetingTime.message}</p>
+        )}
+      </div>
+
+      {/* Favorite Color */}
+      <div>
+        <label className="block mb-1">Favorite Color</label>
+        <input
+          type="color"
+          {...register("favoriteColor", {
+            required: "Color is required",
+            ...ColorValidationCheck
+          })}
+          className="w-full h-10 p-1 border rounded"
+        />
+        {errors.favoriteColor && (
+          <p className="text-red-600 text-sm">{errors.favoriteColor.message}</p>
+        )}
+      </div>
+
+      {/* Bio */}
+      <div>
+        <label className="block mb-1">Bio</label>
+        <textarea
+          {...register("bio", {
+            required: "Bio is required",
+            maxLength: {
+              value: 500,
+              message: "Bio cannot exceed 500 characters"
+            },
+            ...StringValidationCheck
+          })}
+          className="w-full p-2 border rounded"
+          rows={4}
+          placeholder="Tell us about yourself"
+        />
+        {errors.bio && (
+          <p className="text-red-600 text-sm">{errors.bio.message}</p>
+        )}
+      </div>
+
+      {/* Terms Agreement */}
+      <div className="flex items-center">
+        <input
+          type="checkbox"
+          id="terms"
+          {...register("terms", {
+            required: "You must accept the terms and conditions"
+          })}
+          className="mr-2"
+        />
+        <label htmlFor="terms">I agree to the terms and conditions</label>
+        {errors.terms && (
+          <p className="text-red-600 text-sm">{errors.terms.message}</p>
+        )}
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex gap-3 pt-2">
         <button
           type="button"
           onClick={() => trigger()}
           className="bg-yellow-400 px-4 py-2 rounded"
         >
-          Validate
+          Validate All
         </button>
         <button
           type="button"
           onClick={() => reset()}
           className="bg-gray-400 px-4 py-2 rounded"
         >
-          Reset
+          Reset Form
         </button>
         <button
           type="button"
-          onClick={() =>
-            setValue("email", "maruf@example.com", { shouldValidate: true })
-          }
+          onClick={() => {
+            setValue("email", "test@example.com", { shouldValidate: true });
+            setValue("phone", "+1234567890", { shouldValidate: true });
+          }}
           className="bg-blue-500 text-white px-4 py-2 rounded"
         >
-          Fill Email
+          Fill Sample Data
         </button>
       </div>
 
+      {/* Submit Button */}
       <button
         type="submit"
-        disabled={!isValid || isSubmitting}
+        /* disabled={!isValid || isSubmitting} */
         className={`w-full text-white px-4 py-2 rounded ${
-          isValid ? "bg-green-600" : "bg-gray-500"
+          isValid ? "bg-green-600" : "bg-gray-500 opacity-35"
         }`}
       >
         {isSubmitting ? "Submitting..." : "Submit"}
       </button>
 
-      <div className="text-sm text-gray-600 mt-4 space-y-1">
+      {/* Form State Information */}
+      <div className="text-sm text-gray-600 mt-4 space-y-1 p-2 bg-gray-50 rounded">
+        <h3 className="font-bold mb-1">Form State:</h3>
         <p>📌 <strong>isDirty:</strong> {String(isDirty)}</p>
         <p>📌 <strong>isValid:</strong> {String(isValid)}</p>
         <p>📌 <strong>isSubmitted:</strong> {String(isSubmitted)}</p>
         <p>📌 <strong>isSubmitSuccessful:</strong> {String(isSubmitSuccessful)}</p>
         <p>📌 <strong>touchedFields:</strong> {JSON.stringify(touchedFields)}</p>
         <p>📌 <strong>dirtyFields:</strong> {JSON.stringify(dirtyFields)}</p>
-        <p>📌 <strong>All Values:</strong> {JSON.stringify(getValues())}</p>
       </div>
     </form>
   );

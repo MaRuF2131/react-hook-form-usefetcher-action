@@ -9,8 +9,8 @@ export const userNameValidation={
         message:"minimum 3 character need"
     },
     maxLength:{
-        value:10,
-        message:"maximum 10 character accept"
+        value:30,
+        message:"maximum 30 character accept"
     },
     pattern:{
         value:/^[a-zA-Z.]+$/,
@@ -28,6 +28,6 @@ export const numberValidation={
       value:3000,
       message:"max number 3000"
     },
-    setValueAs:(v)=> parseInt(v,10),
-    
+    setValueAs:(v)=> parseFloat(v,10),
+
 }
