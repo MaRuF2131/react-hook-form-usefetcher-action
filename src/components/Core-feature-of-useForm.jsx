@@ -1,5 +1,6 @@
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller} from "react-hook-form";
 import { useEffect } from "react";
+import { useFetcher } from "react-router-dom";
 import { 
   StringValidationCheck,
   DangerousContentCheck,
@@ -18,6 +19,8 @@ import {
 } from "./built-in-validation/built-in-validation";
 
 export default function SmartForm() {
+
+  const Fetcher=useFetcher();
 
   const {
     register,
@@ -75,6 +78,17 @@ export default function SmartForm() {
 
   const onSubmit = async (data) => {
     console.log("Form Data:", data);
+    const formdata=new FormData();
+    // Convert all form data to FormData object
+      Object.entries(data).forEach(([key, value]) => {
+          formdata.append(key, value);
+      });
+    Fetcher.submit(formdata, {
+      method: "post",
+      action: "/save",
+      encType: "multipart/form-data"
+    });
+
 /*     const isvalid= await trigger();
     if (isvalid) {
       console.log("✅ Submitted:", data);
@@ -319,12 +333,12 @@ export default function SmartForm() {
       {/* Submit Button */}
       <button
         type="submit"
-        /* disabled={!isValid || isSubmitting} */
+        disabled={!isValid || isSubmitting || Fetcher.state === "submitting"}
         className={`w-full text-white px-4 py-2 rounded ${
           isValid ? "bg-green-600" : "bg-gray-500 opacity-35"
         }`}
       >
-        {isSubmitting ? "Submitting..." : "Submit"}
+        {isSubmitting || Fetcher.state === "submitting" ? "Submitting..." : "Submit"}
       </button>
 
       {/* Form State Information */}
