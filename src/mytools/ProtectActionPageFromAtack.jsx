@@ -25,6 +25,7 @@ export function verifyBrowserRequest(request) {
     referer.includes("undici")||
     referer !== allowedOrigin
   ) {
+    console.warn("❌ Access Denied: Only browser requests allowed");
     throw new Response("❌ Access Denied: Only browser requests allowed", { status: 403 });
   }
 }
