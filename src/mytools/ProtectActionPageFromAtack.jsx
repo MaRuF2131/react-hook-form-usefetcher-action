@@ -4,6 +4,8 @@ export function verifyBrowserRequest(request) {
   const referer = request.headers.get("referer");
   const userAgent = request.headers.get("user-agent");
 
+console.log("Origin:", origin);
+console.log("Referer:", referer);
   const allowedOrigin = "http://localhost:3000"; // Replace with your actual domain
 
   if (

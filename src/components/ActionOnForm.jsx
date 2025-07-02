@@ -4,7 +4,7 @@ import { verifyBrowserRequest } from "../mytools/ProtectActionPageFromAtack";
 export const ActionOnForm = async ({ request }) => {
   const formData = await request.formData();
   const data = Object.fromEntries(formData);
-  CheckActionHeaderForAuthorization(request);
+  CheckActionHeaderForAuthorization(formData.get("auth_token"));
   verifyBrowserRequest(request);
 
   // ✅ Simulate 5-second delay

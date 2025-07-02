@@ -1,10 +1,10 @@
 
-const CheckActionHeaderForAuthorization = () => {
-  const authHeader = request.headers.get("authorization");
-  const expected = `Bearer ${process.env.VITE_SECRET_TOKEN}`;
-  if (!authHeader || authHeader !== expected) {
-    console.warn("❌ Unauthorized request to /save");
-    throw new Response("Unauthorized", { status: 401 });
+const CheckActionHeaderForAuthorization = (token) => {
+  console.log("Checking authorization token:", token);
+  
+  if (token !== import.meta.env.VITE_ACCESS_TOKEN) {
+    console.warn("❌ Unauthorized request to /save header");
+    throw new Response("Unauthorized", { status: 403 });
   }
 }
 

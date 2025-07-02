@@ -76,6 +76,8 @@ export default function SmartForm() {
     }
   }, [watchUsername]);
 
+ 
+
   const onSubmit = async (data) => {
     console.log("Form Data:", data);
     const formdata=new FormData();
@@ -83,18 +85,14 @@ export default function SmartForm() {
       Object.entries(data).forEach(([key, value]) => {
           formdata.append(key, value);
       });
+     
+    formdata.append("auth_token", import.meta.env.VITE_ACCESS_TOKEN );
+
     Fetcher.submit(formdata, {
       method: "post",
       action: "/save",
-      encType: "multipart/form-data"
+      encType: "multipart/form-data",
     });
-
-/*     const isvalid= await trigger();
-    if (isvalid) {
-      console.log("✅ Submitted:", data);
-    }else{
-      console.log("❌ Submission failed:", errors);
-    } */
   };
 
   
