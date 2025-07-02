@@ -22,7 +22,8 @@ export function verifyBrowserRequest(request) {
     referer.includes("python-requests") ||
     referer.includes("Postman") ||
     referer.includes("HTTPie") ||
-    referer.includes("undici")
+    referer.includes("undici")||
+    referer !== allowedOrigin
   ) {
     throw new Response("❌ Access Denied: Only browser requests allowed", { status: 403 });
   }
